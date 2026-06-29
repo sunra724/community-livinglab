@@ -13,7 +13,6 @@ import {
   MessageSquareText,
   Network,
   ShieldCheck,
-  Target,
   UsersRound,
   WalletCards
 } from "lucide-react";
@@ -67,71 +66,87 @@ export function LivingLabDashboard({ data }: { data: DashboardData }) {
   const budgetProgress = totalPlanned ? (totalExecuted / totalPlanned) * 100 : 0;
 
   return (
-    <div className="dashboard-shell">
-      <aside className="sidebar">
-        <div className="brand-lockup">
-          <div className="brand-mark">
-            <Landmark size={22} strokeWidth={2.2} />
-          </div>
-          <div>
-            <p className="eyebrow">SOILAB</p>
-            <h1>Living Lab</h1>
+    <div className="console-shell">
+      <header className="console-header">
+        <div className="console-header-inner">
+          <a className="console-brand" href="#overview" aria-label="커뮤니티 리빙랩 운영콘솔">
+            <span className="brand-symbol">
+              <Landmark size={18} strokeWidth={2.2} />
+            </span>
+            <span>
+              <strong>Community Living Lab</strong>
+              <small>운영콘솔</small>
+            </span>
+          </a>
+
+          <nav className="console-nav" aria-label="대시보드 탐색">
+            <a href="#overview">
+              <LayoutDashboard size={16} />
+              개요
+            </a>
+            <a href="#timeline">
+              <CalendarDays size={16} />
+              일정
+            </a>
+            <a href="#workshops">
+              <ClipboardList size={16} />
+              워크숍
+            </a>
+            <a href="#deliverables">
+              <FileText size={16} />
+              성과품
+            </a>
+            <a href="#proposals">
+              <MessageSquareText size={16} />
+              제안
+            </a>
+          </nav>
+
+          <div className={`connection-pill ${data.connection.mode}`}>
+            <Database size={15} />
+            <span>{data.connection.label}</span>
           </div>
         </div>
+      </header>
 
-        <nav className="side-nav" aria-label="대시보드 탐색">
-          <a href="#overview">
-            <LayoutDashboard size={18} />
-            개요
-          </a>
-          <a href="#timeline">
-            <CalendarDays size={18} />
-            일정
-          </a>
-          <a href="#workshops">
-            <ClipboardList size={18} />
-            워크숍
-          </a>
-          <a href="#deliverables">
-            <FileText size={18} />
-            성과품
-          </a>
-          <a href="#proposals">
-            <MessageSquareText size={18} />
-            제안
-          </a>
-        </nav>
-
-        <div className={`connection-card ${data.connection.mode}`}>
-          <Database size={18} />
-          <div>
-            <strong>{data.connection.label}</strong>
-            <span>{data.connection.detail}</span>
-          </div>
-        </div>
-      </aside>
-
-      <main className="dashboard-main">
-        <header className="topbar" id="overview">
-          <div>
-            <p className="eyebrow">경북대학교 지역사회공헌센터</p>
-            <h2>{data.project.name}</h2>
+      <main className="console-main">
+        <section className="console-intro" id="overview">
+          <div className="intro-copy">
+            <p className="eyebrow">SOILAB × COMMUNITY & ECONOMY</p>
+            <h1>{data.project.name}</h1>
+            <p>
+              참여기업, 청년 매칭, 현장 실증, 성과품 제출까지 한 화면에서 확인하는
+              운영 관리 대시보드입니다.
+            </p>
             <div className="project-meta">
+              <span>{data.project.client}</span>
               <span>{data.project.period}</span>
               <span>{formatCurrency(data.project.budget)}</span>
             </div>
           </div>
-          <div className="topbar-actions">
-            <a className="icon-action" href="#deliverables" aria-label="성과품 현황으로 이동">
-              <FileText size={17} />
-              성과품
-            </a>
-            <a className="icon-action primary" href="#timeline" aria-label="일정 현황으로 이동">
-              <CalendarDays size={17} />
-              일정
-            </a>
+
+          <div className="intro-card">
+            <div className="intro-card-top">
+              <ShieldCheck size={18} />
+              <strong>권한 기준</strong>
+            </div>
+            <dl>
+              <div>
+                <dt>관리자</dt>
+                <dd>전체 KPI·예산·신청·성과관리</dd>
+              </div>
+              <div>
+                <dt>참여기업</dt>
+                <dd>자기 회사 실증·제안·피드백</dd>
+              </div>
+              <div>
+                <dt>청년</dt>
+                <dd>본인 제안과 매칭 회사 정보</dd>
+              </div>
+            </dl>
+            <p className="connection-note">{data.connection.detail}</p>
           </div>
-        </header>
+        </section>
 
         <section className="kpi-grid" aria-label="핵심 지표">
           {data.kpis.map((kpi) => (
@@ -199,6 +214,13 @@ export function LivingLabDashboard({ data }: { data: DashboardData }) {
           </div>
         </section>
       </main>
+
+      <footer className="console-footer">
+        <div>
+          <span>협동조합 소이랩 × 커뮤니티와경제</span>
+          <span>community-livinglab.soilabcoop.kr</span>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -210,7 +232,7 @@ function KpiCard({ kpi }: { kpi: DashboardKpi }) {
     <article className={`kpi-card tone-${kpi.tone}`}>
       <div className="kpi-card-header">
         <div className="metric-icon">
-          <Icon size={19} />
+          <Icon size={18} />
         </div>
         <span>{kpi.label}</span>
       </div>
@@ -236,7 +258,7 @@ function PanelHeading({
     <div className="panel-heading">
       <div>
         <Icon size={18} />
-        <h3>{title}</h3>
+        <h2>{title}</h2>
       </div>
       <span>{aside}</span>
     </div>
