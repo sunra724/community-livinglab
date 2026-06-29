@@ -42,6 +42,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const notice = getParam(params.notice);
   const noticeLevel = getParam(params.level) === "error" ? "error" : "success";
   const data = await getAdminData();
+  const showConnectionStatus = userContext.role === "super_admin";
   const companies = data.participants.filter((item) => item.type === "company");
   const youths = data.participants.filter((item) => item.type === "youth");
   const pendingProposals = data.proposals.filter((item) =>
@@ -69,10 +70,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             <ArrowUpRight size={16} />
             상황판 보기
           </Link>
-          <span className={`ops-connection ${data.connection.mode}`}>
-            <ShieldCheck size={16} />
-            {data.connection.label}
-          </span>
+          {showConnectionStatus ? (
+            <span className={`ops-connection ${data.connection.mode}`}>
+              <ShieldCheck size={16} />
+              {data.connection.label}
+            </span>
+          ) : null}
         </div>
       </header>
 

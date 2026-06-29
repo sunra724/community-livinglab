@@ -61,7 +61,13 @@ const workstreamLabel: Record<Workstream["status"], string> = {
   blocked: "막힘"
 };
 
-export function LivingLabDashboard({ data }: { data: DashboardData }) {
+export function LivingLabDashboard({
+  data,
+  showConnectionStatus = false
+}: {
+  data: DashboardData;
+  showConnectionStatus?: boolean;
+}) {
   const totalPlanned = data.budget.reduce((sum, item) => sum + item.planned, 0);
   const totalExecuted = data.budget.reduce((sum, item) => sum + item.executed, 0);
   const budgetProgress = totalPlanned ? (totalExecuted / totalPlanned) * 100 : 0;
@@ -102,13 +108,15 @@ export function LivingLabDashboard({ data }: { data: DashboardData }) {
           </a>
         </nav>
 
-        <div className={`connection-card ${data.connection.mode}`}>
-          <Database size={18} />
-          <div>
-            <strong>{data.connection.label}</strong>
-            <span>{data.connection.detail}</span>
+        {showConnectionStatus ? (
+          <div className={`connection-card ${data.connection.mode}`}>
+            <Database size={18} />
+            <div>
+              <strong>{data.connection.label}</strong>
+              <span>{data.connection.detail}</span>
+            </div>
           </div>
-        </div>
+        ) : null}
       </aside>
 
       <main className="dashboard-main">
