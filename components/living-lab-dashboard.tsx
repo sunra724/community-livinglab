@@ -12,8 +12,8 @@ import {
   LayoutDashboard,
   MessageSquareText,
   Network,
+  PenLine,
   ShieldCheck,
-  Target,
   UsersRound,
   WalletCards
 } from "lucide-react";
@@ -122,6 +122,10 @@ export function LivingLabDashboard({ data }: { data: DashboardData }) {
             </div>
           </div>
           <div className="topbar-actions">
+            <a className="icon-action" href="/admin" aria-label="운영 액션센터로 이동">
+              <PenLine size={17} />
+              운영 입력
+            </a>
             <a className="icon-action" href="#deliverables" aria-label="성과품 현황으로 이동">
               <FileText size={17} />
               성과품

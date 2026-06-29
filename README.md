@@ -9,7 +9,10 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000/dashboard`.
+Open:
+
+- `http://127.0.0.1:3000/dashboard` for the status dashboard
+- `http://127.0.0.1:3000/admin` for the operations action center
 
 ## Vercel
 
@@ -32,9 +35,11 @@ Copy `.env.example` to `.env.local` for local development.
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+ADMIN_ACCESS_CODE=
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` is supported for server-side admin reads, but do not add it to a public Vercel deployment until login and role-based routing are enabled. Without Supabase variables, the dashboard renders project-plan sample data.
+`SUPABASE_SERVICE_ROLE_KEY` enables `/admin` write actions. In production, also set `ADMIN_ACCESS_CODE`; without it, write actions stay locked. Without Supabase variables, the dashboard renders project-plan sample data.
 
 ## Database
 
@@ -46,4 +51,4 @@ Run these in Supabase SQL Editor:
 2. `files/002_company_isolation.sql`
 3. `files/004_demo_seed.sql`
 
-After that, `/dashboard` reads the seeded Supabase data instead of the built-in sample fallback.
+After that, `/dashboard` reads the seeded Supabase data instead of the built-in sample fallback, and `/admin?key=YOUR_ADMIN_ACCESS_CODE` can update operational data.
