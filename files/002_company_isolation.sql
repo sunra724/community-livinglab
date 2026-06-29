@@ -713,15 +713,16 @@ select
   (select count(*) from deliverables
      where project_id = p.id and status in ('approved','submitted'))      as deliverables_done,
   (select count(*) from deliverables where project_id = p.id)             as deliverables_total,
+  p.budget_krw                                                            as budget_planned,
+  (select coalesce(sum(executed_amount),0) from budget_items
+     where project_id = p.id)                                             as budget_executed,
   -- 학생 제안 진행 현황 (신규)
+  -- create or replace view는 기존 컬럼 중간에 새 컬럼을 끼워 넣을 수 없으므로 끝에 추가
   (select count(*) from student_proposals where project_id = p.id)        as proposals_total,
   (select count(*) from student_proposals
      where project_id = p.id and status = 'submitted')                    as proposals_pending,
   (select count(*) from student_proposals
-     where project_id = p.id and status = 'accepted')                     as proposals_accepted,
-  p.budget_krw                                                            as budget_planned,
-  (select coalesce(sum(executed_amount),0) from budget_items
-     where project_id = p.id)                                             as budget_executed
+     where project_id = p.id and status = 'accepted')                     as proposals_accepted
 from projects p;
 
 
