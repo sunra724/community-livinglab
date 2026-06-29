@@ -63,9 +63,11 @@ const workstreamLabel: Record<Workstream["status"], string> = {
 
 export function LivingLabDashboard({
   data,
+  showBudgetData = false,
   showConnectionStatus = false
 }: {
   data: DashboardData;
+  showBudgetData?: boolean;
   showConnectionStatus?: boolean;
 }) {
   const totalPlanned = data.budget.reduce((sum, item) => sum + item.planned, 0);
@@ -126,7 +128,7 @@ export function LivingLabDashboard({
             <h2>{data.project.name}</h2>
             <div className="project-meta">
               <span>{data.project.period}</span>
-              <span>{formatCurrency(data.project.budget)}</span>
+              {showBudgetData ? <span>{formatCurrency(data.project.budget)}</span> : null}
             </div>
           </div>
           <div className="topbar-actions">
@@ -181,18 +183,20 @@ export function LivingLabDashboard({
             <WorkshopTable events={data.workshops} />
           </div>
 
-          <div className="panel">
-            <PanelHeading icon={WalletCards} title="예산 집행" aside={`${Math.round(budgetProgress)}%`} />
-            <div className="budget-total">
-              <strong>{formatCurrency(totalExecuted)}</strong>
-              <span>{formatCurrency(totalPlanned)}</span>
+          {showBudgetData ? (
+            <div className="panel">
+              <PanelHeading icon={WalletCards} title="예산 집행" aside={`${Math.round(budgetProgress)}%`} />
+              <div className="budget-total">
+                <strong>{formatCurrency(totalExecuted)}</strong>
+                <span>{formatCurrency(totalPlanned)}</span>
+              </div>
+              <div className="budget-list">
+                {data.budget.map((item) => (
+                  <BudgetRow key={item.category} item={item} />
+                ))}
+              </div>
             </div>
-            <div className="budget-list">
-              {data.budget.map((item) => (
-                <BudgetRow key={item.category} item={item} />
-              ))}
-            </div>
-          </div>
+          ) : null}
         </section>
 
         <section className="dashboard-grid main-columns">

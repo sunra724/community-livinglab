@@ -88,6 +88,10 @@ function OperatorPortal({ data, role }: { data: PortalData; role: PortalRole }) 
   const pending = data.proposals.filter((proposal) =>
     ["submitted", "under_review", "needs_revision"].includes(proposal.status)
   );
+  const adminActionLabel =
+    role === "super_admin"
+      ? "참여자 등록, 매칭, 예산, 성과품 상태 입력"
+      : "참여자 등록, 매칭, 성과품 상태 입력";
 
   return (
     <main className="portal-grid">
@@ -101,7 +105,7 @@ function OperatorPortal({ data, role }: { data: PortalData; role: PortalRole }) 
         <div className="portal-action-list">
           <Link href="/admin">
             <PenLine size={17} />
-            참여자 등록, 매칭, 예산, 성과품 상태 입력
+            {adminActionLabel}
           </Link>
           <Link href="/dashboard">
             <LayoutDashboard size={17} />

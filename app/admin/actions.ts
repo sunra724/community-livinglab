@@ -6,7 +6,7 @@ import {
   assertAdminWriteAccess,
   getWritableSupabaseClient
 } from "@/lib/admin-data";
-import { currentUserCanOperateProject } from "@/lib/auth-context";
+import { currentUserCanOperateProject, getCurrentUserContext } from "@/lib/auth-context";
 
 const projectSlug = "knu-2026";
 
@@ -122,6 +122,11 @@ export async function reviewProposalAction(formData: FormData) {
 
 export async function updateBudgetAction(formData: FormData) {
   await runAdminAction(formData, async ({ supabase }) => {
+    const userContext = await getCurrentUserContext();
+    if (userContext.role !== "super_admin") {
+      throw new Error("예산 관리는 슈퍼관리자만 사용할 수 있습니다.");
+    }
+
     const budgetId = requiredValue(formData, "budgetId");
     const executedAmount = Number(requiredValue(formData, "executedAmount"));
     const executedAt = optionalValue(formData, "executedAt") || null;

@@ -43,12 +43,14 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const noticeLevel = getParam(params.level) === "error" ? "error" : "success";
   const data = await getAdminData();
   const showConnectionStatus = userContext.role === "super_admin";
+  const showBudgetData = userContext.role === "super_admin";
+  const visibleData = showBudgetData ? data : { ...data, budget: [] };
   const companies = data.participants.filter((item) => item.type === "company");
   const youths = data.participants.filter((item) => item.type === "youth");
   const pendingProposals = data.proposals.filter((item) =>
     ["submitted", "under_review"].includes(item.status)
   );
-  const reportDraft = buildWeeklyReport(data);
+  const reportDraft = buildWeeklyReport(visibleData, showBudgetData);
 
   return (
     <div className="ops-shell">
@@ -57,7 +59,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <p className="ops-eyebrow">SOILAB OPERATIONS</p>
           <h1>커뮤니티 리빙랩 운영 액션센터</h1>
           <p>
-            참여자 등록, 매칭, 제안 검토, 예산 입력, 성과품 상태 변경과 보고서 초안 생성을
+            참여자 등록, 매칭, 제안 검토, 성과품 상태 변경과 보고서 초안 생성을
             한 화면에서 처리합니다.
           </p>
         </div>
@@ -310,51 +312,53 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </div>
         </section>
 
-        <section className="ops-panel">
-          <PanelTitle icon={WalletCards} title="예산 집행 입력" aside={formatWon(sum(data.budget, "executedAmount"))} />
-          <form action={updateBudgetAction} className="ops-form">
-            <AdminCodeField code={access.code} />
-            <fieldset disabled={!access.authorized}>
-              <label>
-                예산 항목
-                <select name="budgetId" required>
-                  {data.budget.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.category} · {formatWon(item.executedAmount)} / {formatWon(item.plannedAmount)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                집행 누계
-                <input name="executedAmount" type="number" min="0" step="1000" required placeholder="1200000" />
-              </label>
-              <label>
-                집행일
-                <input name="executedAt" type="date" />
-              </label>
-              <label>
-                지급처
-                <input name="payee" placeholder="거래처 또는 수령자" />
-              </label>
-              <label>
-                증빙 URL
-                <input name="evidenceUrl" type="url" placeholder="https://..." />
-              </label>
-              <button type="submit">예산 저장</button>
-            </fieldset>
-          </form>
-          <div className="budget-bars">
-            {data.budget.map((item) => (
-              <div key={item.id}>
-                <span>{item.category}</span>
-                <div>
-                  <i style={{ width: `${Math.min((item.executedAmount / item.plannedAmount) * 100, 100)}%` }} />
+        {showBudgetData ? (
+          <section className="ops-panel">
+            <PanelTitle icon={WalletCards} title="예산 집행 입력" aside={formatWon(sum(data.budget, "executedAmount"))} />
+            <form action={updateBudgetAction} className="ops-form">
+              <AdminCodeField code={access.code} />
+              <fieldset disabled={!access.authorized}>
+                <label>
+                  예산 항목
+                  <select name="budgetId" required>
+                    {data.budget.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.category} · {formatWon(item.executedAmount)} / {formatWon(item.plannedAmount)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  집행 누계
+                  <input name="executedAmount" type="number" min="0" step="1000" required placeholder="1200000" />
+                </label>
+                <label>
+                  집행일
+                  <input name="executedAt" type="date" />
+                </label>
+                <label>
+                  지급처
+                  <input name="payee" placeholder="거래처 또는 수령자" />
+                </label>
+                <label>
+                  증빙 URL
+                  <input name="evidenceUrl" type="url" placeholder="https://..." />
+                </label>
+                <button type="submit">예산 저장</button>
+              </fieldset>
+            </form>
+            <div className="budget-bars">
+              {data.budget.map((item) => (
+                <div key={item.id}>
+                  <span>{item.category}</span>
+                  <div>
+                    <i style={{ width: `${Math.min((item.executedAmount / item.plannedAmount) * 100, 100)}%` }} />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="ops-panel ops-span-2">
           <PanelTitle icon={Sparkles} title="주간보고 초안" aside="복사해서 편집" />
@@ -442,13 +446,16 @@ function StatusRow({
   );
 }
 
-function buildWeeklyReport(data: AdminData) {
+function buildWeeklyReport(data: AdminData, includeBudget: boolean) {
   const companies = data.participants.filter((item) => item.type === "company");
   const youths = data.participants.filter((item) => item.type === "youth");
   const accepted = data.proposals.filter((item) => item.status === "accepted").length;
   const pending = data.proposals.filter((item) => ["submitted", "under_review"].includes(item.status)).length;
   const budgetExecuted = sum(data.budget, "executedAmount");
   const budgetPlanned = sum(data.budget, "plannedAmount");
+  const budgetLines = includeBudget
+    ? [`- 예산 집행: ${formatWon(budgetExecuted)} / ${formatWon(budgetPlanned)}`]
+    : [];
 
   return [
     `# ${data.project.name} 주간 운영보고 초안`,
@@ -458,7 +465,7 @@ function buildWeeklyReport(data: AdminData) {
     `- 청년 참여자: ${youths.length}명`,
     `- 기업-청년 매칭: ${data.matchings.length}팀`,
     `- 학생 제안: 총 ${data.proposals.length}건, 수용 ${accepted}건, 검토 대기 ${pending}건`,
-    `- 예산 집행: ${formatWon(budgetExecuted)} / ${formatWon(budgetPlanned)}`,
+    ...budgetLines,
     "",
     "## 2. 이번 주 주요 진행",
     ...data.events.slice(0, 4).map((event) => `- ${event.title}: ${formatDate(event.scheduledAt)} / ${event.location ?? "-"}`),

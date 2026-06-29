@@ -10,16 +10,29 @@ export default async function DashboardPage() {
     getCurrentUserContext()
   ]);
   const showConnectionStatus = userContext.role === "super_admin";
-  const dashboardData = showConnectionStatus
-    ? data
-    : {
-        ...data,
-        connection: {
+  const showBudgetData = userContext.role === "super_admin";
+  const dashboardData = {
+    ...data,
+    connection: showConnectionStatus
+      ? data.connection
+      : {
           mode: "sample" as const,
           label: "",
           detail: ""
-        }
-      };
+        },
+    project: {
+      ...data.project,
+      budget: showBudgetData ? data.project.budget : 0
+    },
+    kpis: showBudgetData ? data.kpis : data.kpis.filter((kpi) => kpi.key !== "budget"),
+    budget: showBudgetData ? data.budget : []
+  };
 
-  return <LivingLabDashboard data={dashboardData} showConnectionStatus={showConnectionStatus} />;
+  return (
+    <LivingLabDashboard
+      data={dashboardData}
+      showBudgetData={showBudgetData}
+      showConnectionStatus={showConnectionStatus}
+    />
+  );
 }
