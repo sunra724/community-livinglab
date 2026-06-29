@@ -122,6 +122,10 @@ export function LivingLabDashboard({ data }: { data: DashboardData }) {
             </div>
           </div>
           <div className="topbar-actions">
+            <a className="icon-action" href="/portal" aria-label="역할별 포털로 이동">
+              <ShieldCheck size={17} />
+              내 포털
+            </a>
             <a className="icon-action" href="/admin" aria-label="운영 액션센터로 이동">
               <PenLine size={17} />
               운영 입력

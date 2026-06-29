@@ -27,6 +27,7 @@ import {
   proposalReviewOptions,
   type AdminData
 } from "@/lib/admin-data";
+import { getCurrentUserContext } from "@/lib/auth-context";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,8 @@ type AdminPageProps = {
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const params = (await searchParams) ?? {};
-  const access = getAdminAccess(params.key);
+  const userContext = await getCurrentUserContext();
+  const access = getAdminAccess(params.key, userContext.canOperateProject);
   const notice = getParam(params.notice);
   const noticeLevel = getParam(params.level) === "error" ? "error" : "success";
   const data = await getAdminData();
@@ -59,6 +61,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </p>
         </div>
         <div className="ops-hero-actions">
+          <Link href={userContext.isAuthenticated ? "/portal" : "/login"}>
+            <ShieldCheck size={16} />
+            {userContext.isAuthenticated ? "내 포털" : "로그인"}
+          </Link>
           <Link href="/dashboard">
             <ArrowUpRight size={16} />
             상황판 보기

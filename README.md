@@ -13,6 +13,8 @@ Open:
 
 - `http://127.0.0.1:3000/dashboard` for the status dashboard
 - `http://127.0.0.1:3000/admin` for the operations action center
+- `http://127.0.0.1:3000/login` for Supabase Auth login
+- `http://127.0.0.1:3000/portal` for role-based workspaces
 
 ## Vercel
 
@@ -52,3 +54,15 @@ Run these in Supabase SQL Editor:
 3. `files/004_demo_seed.sql`
 
 After that, `/dashboard` reads the seeded Supabase data instead of the built-in sample fallback, and `/admin?key=YOUR_ADMIN_ACCESS_CODE` can update operational data.
+
+For login-based operation:
+
+1. Create users in Supabase Authentication.
+2. Run the relevant sections in `files/003_user_setup.sql`.
+3. Use `/login`, then `/portal`.
+
+Role routing:
+
+- `soilabcoop@gmail.com`, `sunra724@gmail.com`, or `user_project_roles.role in ('admin','manager')`: operations portal and `/admin` write access
+- `company_members`: company portal and own proposal review
+- `participants.user_id` with `type='youth'`: youth portal and proposal submission

@@ -116,9 +116,18 @@ export const proposalReviewOptions = [
   { value: "rejected", label: "거절" }
 ];
 
-export function getAdminAccess(searchKey?: string | string[]) {
+export function getAdminAccess(searchKey?: string | string[], roleAuthorized = false) {
   const configuredCode = process.env.ADMIN_ACCESS_CODE?.trim();
   const providedKey = Array.isArray(searchKey) ? searchKey[0] : searchKey;
+
+  if (roleAuthorized) {
+    return {
+      authorized: true,
+      code: "",
+      needsCode: false,
+      message: "로그인한 운영 권한으로 쓰기 기능을 열었습니다."
+    };
+  }
 
   if (!configuredCode && process.env.NODE_ENV !== "production") {
     return {

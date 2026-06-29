@@ -6,6 +6,7 @@ import {
   assertAdminWriteAccess,
   getWritableSupabaseClient
 } from "@/lib/admin-data";
+import { currentUserCanOperateProject } from "@/lib/auth-context";
 
 const projectSlug = "knu-2026";
 
@@ -158,7 +159,10 @@ async function runAdminAction(
   let level: "success" | "error" = "success";
 
   try {
-    assertAdminWriteAccess(code);
+    const hasRoleAccess = await currentUserCanOperateProject();
+    if (!hasRoleAccess) {
+      assertAdminWriteAccess(code);
+    }
 
     const supabase = getWritableSupabaseClient();
     const projectId = await getProjectId(supabase);
