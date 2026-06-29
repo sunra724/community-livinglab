@@ -39,3 +39,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ## Database
 
 Supabase migration and setup scripts are in `files/`.
+
+Run these in Supabase SQL Editor:
+
+1. `files/001_initial_schema.sql`
+2. `files/002_company_isolation.sql`
+3. `files/004_demo_seed.sql`
+
+After that, `/dashboard` reads the seeded Supabase data instead of the built-in sample fallback.

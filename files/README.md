@@ -35,8 +35,9 @@
 2. SQL Editor → New query
 3. **001_initial_schema.sql** 전체 붙여넣기 → Run
 4. **002_company_isolation.sql** 전체 붙여넣기 → Run
-5. 마지막 `NOTICE`에 `Migration 002 적용 완료` 확인
-6. **003_user_setup.sql** 은 운영 중 필요한 시점에 섹션별로 사용
+5. 샘플 대시보드 데이터를 Supabase에 넣으려면 **004_demo_seed.sql** 전체 붙여넣기 → Run
+6. 마지막 `NOTICE`에 `Migration 002 적용 완료` 확인
+7. **003_user_setup.sql** 은 운영 중 필요한 시점에 섹션별로 사용
 
 ### 방법 B — Supabase CLI (Git 관리)
 
@@ -46,6 +47,7 @@ mkdir -p supabase/migrations
 cp 001_initial_schema.sql      supabase/migrations/20260629000000_initial_schema.sql
 cp 002_company_isolation.sql   supabase/migrations/20260629000001_company_isolation.sql
 # 003 은 마이그레이션이 아닌 운영 스크립트 → migrations 폴더 밖에 보관
+# 004 는 데모 seed 데이터 → 필요할 때 SQL Editor 또는 별도 seed 절차로 실행
 
 supabase link --project-ref <project-ref>
 supabase db push
@@ -84,7 +86,8 @@ select type, title, status
 select * from project_kpis where slug = 'knu-2026';
 ```
 
-기대 결과: 002까지 적용 후 테이블 22개, 워크숍 4건, 성과품 슬롯 7건, KPI 뷰 1행(목표는 표시, 현재 수치는 모두 0).
+기대 결과: 002까지 적용 후 테이블 22개, 워크숍 4건, 성과품 슬롯 7건, KPI 뷰 1행.
+004까지 적용하면 참여기업 4개사, 청년 8명, 피드백 12건, 제안 8건이 표시됩니다.
 
 ---
 
